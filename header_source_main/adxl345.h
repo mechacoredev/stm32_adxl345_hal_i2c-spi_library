@@ -17,6 +17,9 @@
 #define ADXL345_BW_RATE_ADDR 0x2C
 #define ADXL345_POWER_CTL_ADDR 0x2D
 #define ADXL345_DATA_FORMAT_ADDR 0x31
+#define ADXL345_INT_ENABLE_ADDR  0x2E
+#define ADXL345_INT_MAP_ADDR     0x2F
+#define ADXL345_INT_SOURCE_ADDR     0x30
 // burst read data address
 #define ADXL345_OFSX_ADDR  0x1E
 #define ADXL345_DATAX0     0x32
@@ -91,6 +94,17 @@ typedef struct{
 }ADXL345_POWERCONTROL_t;
 
 typedef struct{
+	uint8_t OVERRUN: 1;
+	uint8_t WATERMARK: 1;
+	uint8_t FREE_FALL: 1;
+	uint8_t INACTIVITY: 1;
+	uint8_t ACTIVITY: 1;
+	uint8_t DOUBLE_TAP: 1;
+	uint8_t SINGLE_TAP: 1;
+	uint8_t DATA_READY: 1;
+}ADXL345_INT_ENABLE_t;
+
+typedef struct{
 	uint8_t i2c_add;
 	I2C_HandleTypeDef* i2c_handler;
 	uint8_t who_am_i;
@@ -99,6 +113,7 @@ typedef struct{
 	int16_t dataY;
 	int16_t dataZ;
 
+	uint8_t interruptstats;
 	uint8_t rawdata[6];
 }ADXL345_t;
 
@@ -106,6 +121,7 @@ typedef struct{
 	ADXL345_BWRATE_t ADXL345_BWRATE;
 	ADXL345_POWERCONTROL_t ADXL345_POWERCNTRL;
 	ADXL345_DATAFORMAT_t ADXL345_DATAFRMT;
+	ADXL345_INT_ENABLE_t ADXL345_INT_ENABLE;
 }ADXL345_CONFIG_t;
 
 uint8_t ADXL345_AutoDetect(ADXL345_t* dev);
@@ -117,5 +133,9 @@ ADXL345_RETURN_STAT ADXL345_Configuration(ADXL345_t* dev, ADXL345_CONFIG_t* conf
 void ADXL345_GetValue(ADXL345_t* dev);
 
 ADXL345_RETURN_STAT ADXL345_Read_Polling(ADXL345_t* dev);
+
+ADXL345_RETURN_STAT ADXL345_Read_DMA(ADXL345_t *dev);
+
+ADXL345_RETURN_STAT ADXL345_Read_Interrupt(ADXL345_t *dev);
 
 #endif /* INC_ADXL345_H_ */
