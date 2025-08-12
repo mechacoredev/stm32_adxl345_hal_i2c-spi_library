@@ -94,7 +94,7 @@ ADXL345_RETURN_STAT ADXL345_Configuration(ADXL345_t *dev,
 		return REG_WRITE_FAIL;
 	}
 
-	databuffer = 0;
+	databuffer = 124;
 
 	if (_adxl345writeregister(dev, ADXL345_INT_MAP_ADDR, &databuffer, 1)
 			!= ADXL345_OK) {
