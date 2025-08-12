@@ -16,6 +16,14 @@ static ADXL345_RETURN_STAT _adxl345readregister(ADXL345_t *dev,
 	return REG_READ_FAIL;
 }
 
+static ADXL345_RETURN_STAT _adxl345readregister_DMA(ADXL345_t *dev,
+		uint16_t MemAddress, uint8_t *pData, uint16_t Size){
+	if(HAL_I2C_Mem_Read_DMA(dev->i2c_handler, dev->i2c_add, MemAddress, 1, pData, Size)==HAL_OK){
+		return ADXL345_OK;
+	}
+	return REG_READ_FAIL;
+}
+
 static ADXL345_RETURN_STAT _adxl345writeregister(ADXL345_t *dev,
 		uint16_t MemAddress, uint8_t *pData, uint16_t Size) {
 	if (HAL_I2C_Mem_Write(dev->i2c_handler, dev->i2c_add, MemAddress, 1, pData,
@@ -86,6 +94,20 @@ ADXL345_RETURN_STAT ADXL345_Configuration(ADXL345_t *dev,
 		return REG_WRITE_FAIL;
 	}
 
+	databuffer = 0;
+
+	if (_adxl345writeregister(dev, ADXL345_INT_MAP_ADDR, &databuffer, 1)
+			!= ADXL345_OK) {
+		return REG_WRITE_FAIL;
+	}
+
+	databuffer = (config->ADXL345_INT_ENABLE.DATA_READY<<7)|(config->ADXL345_INT_ENABLE.SINGLE_TAP<<6)|(config->ADXL345_INT_ENABLE.DOUBLE_TAP<<5)|(config->ADXL345_INT_ENABLE.ACTIVITY<<4)|(config->ADXL345_INT_ENABLE.INACTIVITY<<3)|(config->ADXL345_INT_ENABLE.FREE_FALL<<2)|(config->ADXL345_INT_ENABLE.WATERMARK<<1)|(config->ADXL345_INT_ENABLE.OVERRUN);
+
+	if (_adxl345writeregister(dev, ADXL345_INT_ENABLE_ADDR, &databuffer, 1)
+			!= ADXL345_OK) {
+		return REG_WRITE_FAIL;
+	}
+
 	return ADXL345_OK;
 }
 
@@ -93,6 +115,22 @@ void inline ADXL345_GetValue(ADXL345_t *dev) {
 	dev->dataX =  (dev->rawdata[1] << 8) | (dev->rawdata[0]);
 	dev->dataY =  (dev->rawdata[3] << 8) | (dev->rawdata[2]);
 	dev->dataZ =  (dev->rawdata[5] << 8) | (dev->rawdata[4]);
+}
+
+ADXL345_RETURN_STAT ADXL345_Read_DMA(ADXL345_t *dev) {
+	if (_adxl345readregister_DMA(dev, ADXL345_DATAX0, dev->rawdata, 6)
+			== ADXL345_OK) {
+		return ADXL345_OK;
+	}
+	return REG_READ_FAIL;
+}
+
+ADXL345_RETURN_STAT ADXL345_Read_Interrupt(ADXL345_t *dev) {
+	if (_adxl345readregister(dev, ADXL345_INT_SOURCE_ADDR, &(dev->interruptstats), 1)
+			== ADXL345_OK) {
+		return ADXL345_OK;
+	}
+	return REG_READ_FAIL;
 }
 
 ADXL345_RETURN_STAT ADXL345_Read_Polling(ADXL345_t *dev) {
