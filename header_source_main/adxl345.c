@@ -71,7 +71,7 @@ ADXL345_RETURN_STAT ADXL345_Configuration(ADXL345_t *dev,
 			| (config->ADXL345_DATAFRMT.INT_INVERT << 5)
 			| (config->ADXL345_DATAFRMT.FULL_RES << 3)
 			| (config->ADXL345_DATAFRMT.JUSTIFY << 2)
-			| (config->ADXL345_DATAFRMT.RANGE << 1));
+			| (config->ADXL345_DATAFRMT.RANGE));
 
 	if (_adxl345writeregister(dev, ADXL345_DATA_FORMAT_ADDR, &databuffer, 1)
 			!= ADXL345_OK) {
