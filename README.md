@@ -1,0 +1,1 @@
+# stm32_adxl345_hal_i2c-spi_library
