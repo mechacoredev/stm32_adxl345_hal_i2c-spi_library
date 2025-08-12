@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "adxl345.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +51,7 @@ ADXL345_t my_adxl345;
 ADXL345_CONFIG_t my_adxl345_config;
 uint8_t adxl345add;
 ADXL345_RETURN_STAT adxlstat1,adxlstat2;
+uint16_t count=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
