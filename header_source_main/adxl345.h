@@ -8,7 +8,7 @@
 #ifndef INC_ADXL345_H_
 #define INC_ADXL345_H_
 
-#include "main.h"
+#include "stm32f4xx_hal.h"
 
 #define ADXL345_DEVID_ADDR 0x00
 #define ADXL345_THRESH_TAP 0x1D
