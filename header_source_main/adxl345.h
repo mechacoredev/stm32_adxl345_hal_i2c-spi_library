@@ -1,0 +1,121 @@
+/*
+ * adxl345.h
+ *
+ *  Created on: Aug 12, 2025
+ *      Author: Enes
+ */
+
+#ifndef INC_ADXL345_H_
+#define INC_ADXL345_H_
+
+#include "main.h"
+
+#define ADXL345_DEVID_ADDR 0x00
+#define ADXL345_THRESH_TAP 0x1D
+#define ADXL345_I2C_ADDR_0   (0x53 << 1)
+#define ADXL345_I2C_ADDR_1   (0x1D << 1)
+#define ADXL345_BW_RATE_ADDR 0x2C
+#define ADXL345_POWER_CTL_ADDR 0x2D
+#define ADXL345_DATA_FORMAT_ADDR 0x31
+// burst read data address
+#define ADXL345_OFSX_ADDR  0x1E
+#define ADXL345_DATAX0     0x32
+
+
+typedef enum{
+	ADXL345_OK=0,
+	DEVICE_NOT_FOUND,
+	WHO_IS_THIS,
+	REG_READ_FAIL,
+	REG_WRITE_FAIL,
+	CALCULATE_FAIL,
+}ADXL345_RETURN_STAT;
+
+typedef enum{
+	BANDWIDTHRATE_0_0_5 = 0,
+	BANDWIDTHRATE_0_1,
+	BANDWIDTHRATE_0_2,
+	BANDWIDTHRATE_0_4,
+	BANDWIDTHRATE_0_8,
+	BANDWIDTHRATE_1_6,
+	BANDWIDTHRATE_3_1,
+	BANDWIDTHRATE_6_25,
+	BANDWIDTHRATE_12_5,
+	BANDWIDTHRATE_25_0,
+	BANDWIDTHRATE_50_0,
+	BANDWIDTHRATE_100_0,
+	BANDWIDTHRATE_200_0,
+	BANDWIDTHRATE_400_0,
+	BANDWIDTHRATE_800_0,
+	BANDWIDTHRATE_1600_0,
+	BANDWIDTHRATE_3200_0,
+}ADXL345_BWRATE_BITS;
+
+typedef enum{
+	WAKEUP_8HZ = 0,
+	WAKEUP_4HZ,
+	WAKEUP_2HZ,
+	WAKEUP_1HZ,
+}ADXL345_WAKEUP_BITS;
+
+typedef enum{
+	RANGE_2G = 0,
+	RANGE_4G,
+	RANGE_8G,
+	RANGE_16G,
+}ADXL345_RANGE_BITS;
+
+typedef struct{
+	uint8_t RATE: 4;
+	uint8_t LOW_PWR: 1;
+	uint8_t RESERVED: 3; // 3 MSB
+}ADXL345_BWRATE_t;
+
+typedef struct{
+	uint8_t RANGE: 2;
+	uint8_t JUSTIFY: 1;
+	uint8_t FULL_RES: 1;
+	uint8_t RESERVED: 1; // bit 4
+	uint8_t INT_INVERT: 1;
+	uint8_t SPI: 1;
+	uint8_t SELF_TEST: 1;
+}ADXL345_DATAFORMAT_t;
+
+typedef struct{
+	uint8_t WAKE_UP: 2;
+	uint8_t SLEEP: 1;
+	uint8_t MEASURE: 1;
+	uint8_t AUTO_SLEEP: 1;
+	uint8_t LINK: 1;
+	uint8_t RESERVED: 2; // 2 MSB
+}ADXL345_POWERCONTROL_t;
+
+typedef struct{
+	uint8_t i2c_add;
+	I2C_HandleTypeDef* i2c_handler;
+	uint8_t who_am_i;
+
+	int16_t dataX;
+	int16_t dataY;
+	int16_t dataZ;
+
+	uint8_t rawdata[6];
+}ADXL345_t;
+
+typedef struct{
+	ADXL345_BWRATE_t ADXL345_BWRATE;
+	ADXL345_POWERCONTROL_t ADXL345_POWERCNTRL;
+	ADXL345_DATAFORMAT_t ADXL345_DATAFRMT;
+}ADXL345_CONFIG_t;
+
+uint8_t ADXL345_AutoDetect(ADXL345_t* dev);
+
+ADXL345_RETURN_STAT ADXL345_Init(ADXL345_t* dev, uint8_t addr);
+
+ADXL345_RETURN_STAT ADXL345_Configuration(ADXL345_t* dev, ADXL345_CONFIG_t* config);
+
+void ADXL345_GetValue(ADXL345_t* dev);
+
+ADXL345_RETURN_STAT ADXL345_Read_Polling(ADXL345_t* dev);
+
+#endif /* INC_ADXL345_H_ */
